@@ -2,11 +2,9 @@
 #include <ctype.h>
 #include <string.h>
 
+char keyword[30][30] = {"int", "while", "break", "for", "do", "if", "float", "char", "switch", "double ", " short ", " long ", " unsigned ", " sizeof ", " else ", " register ", " extern ", " static ", " auto ", " case ", " break ", " volatile ", " enum ", " typedef "};
+char id[20], num[10];
 
-char keyword[30][30] = {"int", "while", "break", "for", "do", "if", "float", "char", "switch", "double "," short "," long "," unsigned "," sizeof "," else "," register "," extern "," static "," auto "," case "," break "," volatile "," enum "," typedef "};
-char id[50], num[10],syn[10];
-char symb_tab[50][20];
-int idx = 0;
 // declare symbol table as a doubly dimensional array of characters.
 int check_keyword(char s[])
 {
@@ -17,35 +15,19 @@ int check_keyword(char s[])
     return 0;
 }
 
-void store_symb_tab(char id[],char symb_tab[][20])
-{
-    int flag = 0, i;
-    for (i = 0; i < idx; i++)
-    {
-        if (strcmp(id, symb_tab[i]) == 0)
-        {
-            flag = 1;
-        }
-    }
-    if (flag == 0)
-    {
-        symb_tab[i][idx] =  id[i];
-        idx++;
-    }    
-}
-
-/*write a function to store identifier in symbol table
+// write a function to store identifier in symbol table
 void store_symb_tab(char id[], char symb_tab[][20])
 {
-Check whether the id is already available in the symbol table, if available,
-ignore. otherwise add it.
-}*/
+    // Check whether the id is already available in the symbol table, if available,
+    // ignore. otherwise add it.
+}
+
 int main()
 {
     FILE *fp1, *fp2;
     char c;
     int state = 0;
-    int i = 0, j = 0,k = 0;
+    int i = 0, j = 0;
     fp1 = fopen("x.txt", "r"); // input file containing src prog
     fp2 = fopen("y.txt", "w"); // output file name
 
@@ -65,15 +47,9 @@ int main()
                 num[j++] = c;
             }
             else if (c == '<' || c == '>')
-            {
                 state = 5;
-                syn[k++] = c;
-            }
             else if (c == '=' || c == '!')
-            {
                 state = 8;
-                syn[k++] = c;
-            }
             else if (c == '/')
                 state = 10;
             else if (c == ' ' || c == '\t' || c == '\n')
@@ -93,11 +69,7 @@ int main()
                 if (check_keyword(id))
                     fprintf(fp2, " \n %s : keyword ", id);
                 else
-                {
                     fprintf(fp2, "\n %s : identifier", id);
-                    store_symb_tab(id, symb_tab);
-
-                }            
                 // call a function which stores id in symbol table
                 state = 0;
                 i = 0;
@@ -122,27 +94,22 @@ int main()
         case 5:
             if (c == '=')
             {
+                fprintf(fp2, "\n relational operator ");
                 // write code to print specific operator like <= or >=
                 state = 0;
             }
             else
             {
+                fprintf(fp2, "\n relational operator ");
                 // write code to print specific operator like <, >, <= or >=
                 state = 0;
                 ungetc(c, fp1);
             }
-            syn[k++] = c;
-            syn[k] = '\0';
-            fprintf(fp2, "\n%s : relational operator ", syn);
-            k = 0;
             break;
         case 8:
             if (c == '=')
             {
-                syn[k++] = c;
-                syn[k] = '\0';
-                fprintf(fp2, "\n%s : relational operator ", syn);
-                k = 0;
+                fprintf(fp2, "\n relational operator ");
                 // write code to print specific operator like == or !=
                 state = 0;
             }
@@ -172,9 +139,8 @@ int main()
             else
                 state = 11;
             break;
-
-        } // End of switch
-    }     // end of while
+        }
+    }
     if (state == 11)
         fprintf(fp2, "comment did not close");
     fclose(fp1);
